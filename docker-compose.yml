@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  db:
+    image: mysql:8.0
+    container_name: campustrack-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: campustrack
+      MYSQL_USER: campustrack_user
+      MYSQL_PASSWORD: campuspassword123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Java Backend (Apache Tomcat 10 + Jakarta Servlets)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: campustrack-backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: campustrack
+      DB_USER: campustrack_user
+      DB_PASSWORD: campuspassword123
+      JWT_SECRET: "CampusTrackSecureSecretKey2026!9876543210#@"
+      PORT: 8080
+
+  # Optional phpMyAdmin Web Interface for Lab Evaluation
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: campustrack-phpmyadmin
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: rootpassword
+
+volumes:
+  mysql_data:

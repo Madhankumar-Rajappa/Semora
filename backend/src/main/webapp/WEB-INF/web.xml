@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
+
+    <display-name>CampusTrack</display-name>
+
+    <welcome-file-list>
+        <welcome-file>jsp/index.jsp</welcome-file>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+    <!-- Global CORS Filter -->
+    <filter>
+        <filter-name>CorsFilter</filter-name>
+        <filter-class>com.campustrack.filter.CorsFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Global JWT Authentication Filter -->
+    <filter>
+        <filter-name>AuthFilter</filter-name>
+        <filter-class>com.campustrack.filter.AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Database Context Listener for graceful startup and shutdown -->
+    <listener>
+        <listener-class>com.campustrack.util.AppContextListener</listener-class>
+    </listener>
+
+</web-app>

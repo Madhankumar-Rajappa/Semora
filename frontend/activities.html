@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects & Activities — CampusTrack</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="dashboard.html">
+                <div class="brand-icon">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <span>CampusTrack</span>
+            </a>
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <i class="bi bi-list fs-2"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html"><i class="bi bi-grid-fill"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="semesters.html"><i class="bi bi-journal-bookmark-fill"></i> Semesters & Marks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="assignments.html"><i class="bi bi-clock-history"></i> Assignments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="records.html"><i class="bi bi-award-fill"></i> Certificates & Docs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="activities.html"><i class="bi bi-rocket-takeoff-fill"></i> Projects & Activities</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="profile.html" id="apiStatusPill" class="api-pill offline" title="Backend Status">
+                        <span class="status-dot yellow"></span>
+                        <span>API Status</span>
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-custom btn-sm dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle text-primary"></i>
+                            <span id="navStudentName">Student</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                            <li><h6 class="dropdown-header text-muted" id="navStudentDept">Engineering</h6></li>
+                            <li><a class="dropdown-item" href="profile.html"><i class="bi bi-sliders me-2"></i>Profile & API Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" id="navLogoutBtn"><i class="bi bi-power me-2"></i>Sign Out</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container py-4">
+        <!-- Page Header & Action -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="page-title">Projects & Extracurricular Portfolio</h2>
+                <p class="page-subtitle mb-0">Showcase software development, internships, hackathons, and sports</p>
+            </div>
+            <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addActivityModal">
+                <i class="bi bi-plus-lg me-1"></i> Add Project / Activity
+            </button>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="card-glass p-3 mb-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary border-opacity-50 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" id="actSearchInput" class="form-control form-control-custom" placeholder="Search by title, organization, or tech stack...">
+                    </div>
+                </div>
+                <div class="col-md-6 d-flex align-items-center justify-content-md-end gap-2">
+                    <label class="text-muted small fw-medium mb-0">Semester:</label>
+                    <select id="actSemesterFilter" class="form-select form-select-custom form-select-sm" style="max-width: 200px;">
+                        <option value="ALL">All Semesters</option>
+                    </select>
+                </div>
+                <div class="col-12 pt-2 border-top border-secondary border-opacity-25">
+                    <ul class="nav nav-pills gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link act-tab active" href="#" data-category="ALL">All Activities</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link act-tab" href="#" data-category="project">Projects</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link act-tab" href="#" data-category="internship">Internships</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link act-tab" href="#" data-category="hackathon">Hackathons</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link act-tab" href="#" data-category="workshop">Workshops</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link act-tab" href="#" data-category="sports">Sports & Extracurriculars</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activities Cards Grid -->
+        <div class="row" id="activitiesContainer">
+            <div class="col-12 text-center py-5 text-muted">
+                <div class="spinner-border spinner-border-sm text-primary"></div> Loading portfolio...
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Add Activity -->
+    <div class="modal fade" id="addActivityModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content modal-content-custom p-3">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-white"><i class="bi bi-rocket-takeoff text-primary me-2"></i>Add Project / Milestone</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="addActivityForm">
+                    <div class="modal-body py-3">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label text-light small fw-medium">Title</label>
+                                <input type="text" id="actTitle" class="form-control form-control-custom" placeholder="e.g. CampusTrack — College Tracker Web App" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-light small fw-medium">Category</label>
+                                <select id="actCategory" class="form-select form-select-custom" required>
+                                    <option value="project" selected>Software Project</option>
+                                    <option value="internship">Internship</option>
+                                    <option value="hackathon">Hackathon</option>
+                                    <option value="workshop">Workshop</option>
+                                    <option value="seminar">Seminar</option>
+                                    <option value="competition">Competition</option>
+                                    <option value="sports">Sports</option>
+                                    <option value="extracurricular">Extracurricular</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small fw-medium">Role / Position</label>
+                                <input type="text" id="actRole" class="form-control form-control-custom" placeholder="e.g. Lead Full-Stack Developer">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small fw-medium">Organization / Lab / Event</label>
+                                <input type="text" id="actOrganization" class="form-control form-control-custom" placeholder="e.g. Apex Tech Lab / CloudScale Inc.">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small fw-medium">Linked Semester</label>
+                                <select id="actSemesterId" class="form-select form-select-custom">
+                                    <option value="">General / None</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small fw-medium">Skills / Technologies (comma separated)</label>
+                                <input type="text" id="actSkills" class="form-control form-control-custom" placeholder="e.g. Java, Servlets, MySQL, Vercel, Docker">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small fw-medium">GitHub Repository URL</label>
+                                <input type="url" id="actGithub" class="form-control form-control-custom" placeholder="https://github.com/username/repo">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small fw-medium">Live Demo / Deployment URL</label>
+                                <input type="url" id="actDemo" class="form-control form-control-custom" placeholder="https://project.vercel.app">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-light small fw-medium">Description & Impact</label>
+                                <textarea id="actDescription" class="form-control form-control-custom" rows="3" placeholder="Summary of architecture, contributions, and benchmarks..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary-custom px-4">Save Activity</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/activities.js"></script>
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CampusTrack — My Semesters. Manage your collegiate journey semester by semester with real-time academic progression.">
+    <title>My Semesters — CampusTrack</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="academic-dashboard-body">
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg bg-white border-bottom border-subtle sticky-top py-2 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="semesters.html">
+                <div class="brand-logo" style="background: linear-gradient(135deg, #0d9488, #0f766e); width: 38px; height: 38px;">
+                    <i class="bi bi-mortarboard-fill text-white fs-5"></i>
+                </div>
+                <span class="fw-bold fs-5 text-dark" style="font-family: 'Outfit', sans-serif; letter-spacing: -0.02em;">CampusTrack</span>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <i class="bi bi-list fs-2 text-dark"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-semibold text-teal-custom" href="semesters.html" style="color: var(--teal-accent);">
+                            <i class="bi bi-journal-bookmark-fill me-1"></i> My Semesters
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Live Backend Status Pill -->
+                    <span id="apiStatusPill" class="badge rounded-pill bg-light text-dark border px-3 py-2 d-flex align-items-center gap-2" title="Backend API Health">
+                        <span id="apiStatusDot" class="status-dot-pulse bg-warning"></span>
+                        <span id="apiStatusText" class="small fw-medium">Connecting...</span>
+                    </span>
+
+                    <!-- Student Profile & Switcher for Isolation Testing -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary btn-sm rounded-pill dropdown-toggle d-flex align-items-center gap-2 px-3 py-1.5" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle text-teal-custom"></i>
+                            <span id="currentStudentLabel" class="fw-semibold">Alex Morgan (Student 1)</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                            <li><h6 class="dropdown-header text-uppercase small text-muted">Test Student Identity</h6></li>
+                            <li>
+                                <button class="dropdown-item d-flex align-items-center gap-2 switch-student-btn" data-student-id="1" data-student-name="Alex Morgan">
+                                    <i class="bi bi-person-fill text-primary"></i> Alex Morgan (Student #1)
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item d-flex align-items-center gap-2 switch-student-btn" data-student-id="2" data-student-name="Jordan Lee">
+                                    <i class="bi bi-person-badge text-success"></i> Jordan Lee (Student #2)
+                                </button>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-muted small" href="#" id="reloadApiBtn"><i class="bi bi-arrow-clockwise me-2"></i>Reload Data</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container py-4 py-md-5">
+
+        <!-- Page Header & Action -->
+        <header class="academic-page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h1 class="academic-page-title" id="pageMainHeading">My Semesters</h1>
+                <p class="academic-page-subtitle mb-0">Manage your college journey semester by semester.</p>
+            </div>
+            <div>
+                <button class="btn btn-academic-teal btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#addSemesterModal" id="openAddSemesterBtn">
+                    <i class="bi bi-plus-circle-fill"></i> Add Semester
+                </button>
+            </div>
+        </header>
+
+        <!-- Student Multi-Tenancy Indicator Banner -->
+        <div class="student-switcher-bar d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-shield-lock-fill text-teal-custom fs-5"></i>
+                <span class="small text-muted">Active Student Scope:</span>
+                <span class="badge bg-light text-dark border px-2 py-1 fw-bold" id="activeStudentBadge">Alex Morgan (ID: 1)</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="small text-muted">Test Isolation:</span>
+                <button class="btn btn-sm btn-outline-secondary py-0 px-2 small switch-student-btn" id="quickToggleStudentBtn" data-student-id="2" data-student-name="Jordan Lee">
+                    Switch to Student #2
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary KPI Cards -->
+        <section class="row g-3 g-md-4 mb-4 mb-md-5" id="summaryCardsSection">
+            <div class="col-md-4">
+                <div class="summary-kpi-card">
+                    <div>
+                        <div class="kpi-label">Total Semesters</div>
+                        <div class="kpi-value" id="kpiTotalSemesters">—</div>
+                        <p class="kpi-subtext">Undergraduate journey milestones</p>
+                    </div>
+                    <div class="kpi-icon-bubble total">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="summary-kpi-card">
+                    <div>
+                        <div class="kpi-label">Active Semesters</div>
+                        <div class="kpi-value text-teal-custom" id="kpiActiveSemesters">—</div>
+                        <p class="kpi-subtext">Currently enrolled & in-progress</p>
+                    </div>
+                    <div class="kpi-icon-bubble active">
+                        <i class="bi bi-play-circle-fill"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="summary-kpi-card">
+                    <div>
+                        <div class="kpi-label">Completed Semesters</div>
+                        <div class="kpi-value text-success" id="kpiCompletedSemesters">—</div>
+                        <p class="kpi-subtext">Successfully completed terms</p>
+                    </div>
+                    <div class="kpi-icon-bubble completed">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Backend Error Alert (if offline or error) -->
+        <div id="backendErrorContainer" class="d-none alert alert-danger border-0 rounded-4 shadow-sm p-4 mb-4">
+            <div class="d-flex align-items-start gap-3">
+                <i class="bi bi-exclamation-triangle-fill fs-2 text-danger"></i>
+                <div class="flex-grow-1">
+                    <h5 class="fw-bold mb-1 text-danger">Backend Server Connection Unavailable</h5>
+                    <p class="mb-3 text-secondary" id="backendErrorMessage">Unable to communicate with the Java REST API. Please ensure Apache Tomcat is running locally on port 8080.</p>
+                    <button class="btn btn-danger btn-sm rounded-pill px-3 py-1.5" id="retryConnectionBtn">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Retry Connection
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State Spinner & Skeletons -->
+        <div id="semestersLoadingState" class="py-5 text-center">
+            <div class="spinner-border text-teal-custom" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Loading semesters...</span>
+            </div>
+            <h5 class="mt-3 text-secondary fw-semibold">Loading semester records...</h5>
+            <p class="text-muted small">Fetching academic data from MySQL database via REST API</p>
+        </div>
+
+        <!-- Empty State Container (Displayed when student has 0 semesters) -->
+        <div id="semestersEmptyState" class="semesters-empty-state d-none">
+            <div class="empty-state-icon">
+                <i class="bi bi-folder2-open"></i>
+            </div>
+            <h3 class="empty-state-title">No Semesters Added Yet</h3>
+            <p class="empty-state-desc">
+                Your college journey starts here. Add your first semester to begin tracking your academic progress, courses, and milestones.
+            </p>
+            <button class="btn btn-academic-teal btn-lg" data-bs-toggle="modal" data-bs-target="#addSemesterModal">
+                <i class="bi bi-plus-circle-fill me-1"></i> Create Semester 1
+            </button>
+        </div>
+
+        <!-- Responsive Grid of Semester Cards -->
+        <div id="semestersGrid" class="semesters-grid d-none">
+            <!-- Rendered dynamically by JavaScript -->
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="container py-4 text-center border-top mt-5">
+        <p class="text-muted small mb-0">CampusTrack &bull; Phase 1: Semester Management Module &bull; Deployable to Vercel & Tomcat</p>
+    </footer>
+
+    <!-- ====================================================================== -->
+    <!-- MODALS                                                                 -->
+    <!-- ====================================================================== -->
+
+    <!-- 1. Add Semester Modal -->
+    <div class="modal fade academic-modal" id="addSemesterModal" tabindex="-1" aria-labelledby="addSemesterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="kpi-icon-bubble active" style="width: 36px; height: 36px; font-size: 1.1rem;">
+                            <i class="bi bi-folder-plus"></i>
+                        </div>
+                        <h5 class="modal-title mb-0" id="addSemesterModalLabel">Add New Semester</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="addSemesterForm" novalidate>
+                    <div class="modal-body">
+                        <!-- Validation feedback alert -->
+                        <div id="addSemesterErrorAlert" class="alert alert-danger py-2 px-3 small d-none mb-3"></div>
+
+                        <!-- Semester Number (1 to 8) -->
+                        <div class="mb-3">
+                            <label for="addSemesterNumber" class="form-label form-label-academic">Semester Number <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-academic" id="addSemesterNumber" required>
+                                <option value="" disabled selected>Select semester (1 – 8)...</option>
+                                <option value="1">Semester 1 (Freshman - Fall)</option>
+                                <option value="2">Semester 2 (Freshman - Spring)</option>
+                                <option value="3">Semester 3 (Sophomore - Fall)</option>
+                                <option value="4">Semester 4 (Sophomore - Spring)</option>
+                                <option value="5">Semester 5 (Junior - Fall)</option>
+                                <option value="6">Semester 6 (Junior - Spring)</option>
+                                <option value="7">Semester 7 (Senior - Fall)</option>
+                                <option value="8">Semester 8 (Senior - Spring)</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a valid semester number between 1 and 8.</div>
+                            <small class="text-muted">Unique semester number for your college program.</small>
+                        </div>
+
+                        <!-- Academic Year -->
+                        <div class="mb-3">
+                            <label for="addAcademicYear" class="form-label form-label-academic">Academic Year <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-academic" id="addAcademicYear" placeholder="e.g. 2024-2025" required maxlength="30">
+                            <div class="invalid-feedback">Please enter the academic year (e.g. 2024-2025).</div>
+                            <div class="d-flex gap-2 mt-1">
+                                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none small text-teal-custom year-suggestion" data-year="2024-2025">2024-2025</button>
+                                <span class="text-muted small">&bull;</span>
+                                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none small text-teal-custom year-suggestion" data-year="2025-2026">2025-2026</button>
+                                <span class="text-muted small">&bull;</span>
+                                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none small text-teal-custom year-suggestion" data-year="2023-2024">2023-2024</button>
+                            </div>
+                        </div>
+
+                        <!-- Status: Active or Completed (Defaults to Active) -->
+                        <div class="mb-3">
+                            <label for="addSemesterStatus" class="form-label form-label-academic">Status <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-academic" id="addSemesterStatus" required>
+                                <option value="Active" selected>Active (In-Progress)</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                            <small class="text-muted">Defaults to Active. Can be marked Completed at any time.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-academic-teal" id="addSemesterSubmitBtn">
+                            <span class="spinner-border spinner-border-sm d-none" id="addSemesterSpinner"></span>
+                            <span>Create Semester</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Edit Semester Modal -->
+    <div class="modal fade academic-modal" id="editSemesterModal" tabindex="-1" aria-labelledby="editSemesterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="kpi-icon-bubble total" style="width: 36px; height: 36px; font-size: 1.1rem;">
+                            <i class="bi bi-pencil-square"></i>
+                        </div>
+                        <h5 class="modal-title mb-0" id="editSemesterModalLabel">Edit Semester</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editSemesterForm" novalidate>
+                    <input type="hidden" id="editSemesterId">
+                    <div class="modal-body">
+                        <!-- Validation feedback alert -->
+                        <div id="editSemesterErrorAlert" class="alert alert-danger py-2 px-3 small d-none mb-3"></div>
+
+                        <!-- Semester Number -->
+                        <div class="mb-3">
+                            <label for="editSemesterNumber" class="form-label form-label-academic">Semester Number <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-academic" id="editSemesterNumber" required>
+                                <option value="1">Semester 1</option>
+                                <option value="2">Semester 2</option>
+                                <option value="3">Semester 3</option>
+                                <option value="4">Semester 4</option>
+                                <option value="5">Semester 5</option>
+                                <option value="6">Semester 6</option>
+                                <option value="7">Semester 7</option>
+                                <option value="8">Semester 8</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a valid semester number (1 - 8).</div>
+                        </div>
+
+                        <!-- Academic Year -->
+                        <div class="mb-3">
+                            <label for="editAcademicYear" class="form-label form-label-academic">Academic Year <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-academic" id="editAcademicYear" required maxlength="30">
+                            <div class="invalid-feedback">Academic year is required.</div>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="mb-3">
+                            <label for="editSemesterStatus" class="form-label form-label-academic">Status <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-academic" id="editSemesterStatus" required>
+                                <option value="Active">Active</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-academic-teal" id="editSemesterSubmitBtn">
+                            <span class="spinner-border spinner-border-sm d-none" id="editSemesterSpinner"></span>
+                            <span>Save Changes</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Status Change Confirmation Modal -->
+    <div class="modal fade academic-modal" id="statusConfirmModal" tabindex="-1" aria-labelledby="statusConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fs-6" id="statusConfirmModalLabel">Confirm Status Change</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="mb-3" id="statusConfirmIconBox">
+                        <i class="bi bi-question-circle text-teal-custom" style="font-size: 3rem;"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2 text-dark" id="statusConfirmHeading">Change Semester Status?</h6>
+                    <p class="text-muted small mb-0" id="statusConfirmMessage">
+                        Are you sure you want to change the status of this semester?
+                    </p>
+                </div>
+                <div class="modal-footer border-0 pt-0 justify-content-center">
+                    <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-academic-teal rounded-pill px-4" id="confirmStatusChangeBtn">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Delete Semester Confirmation Modal -->
+    <div class="modal fade academic-modal" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fs-6 text-danger" id="deleteConfirmModalLabel">Delete Semester</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="bi bi-trash3-fill text-danger" style="font-size: 3rem;"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2 text-dark" id="deleteConfirmHeading">Delete Semester?</h6>
+                    <p class="text-muted small mb-0" id="deleteConfirmMessage">
+                        This will permanently delete this semester record. This action cannot be undone.
+                    </p>
+                </div>
+                <div class="modal-footer border-0 pt-0 justify-content-center">
+                    <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger rounded-pill px-4" id="confirmDeleteSemesterBtn">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App Config & API Client -->
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <!-- Page Controller -->
+    <script src="js/semesters.js"></script>
+</body>
+</html>
