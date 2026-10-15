@@ -21,6 +21,21 @@ public class StudentDAO {
         return null;
     }
 
+    public Student findByRegistrationNumber(String regNo) throws SQLException {
+        if (regNo == null || regNo.trim().isEmpty()) return null;
+        String sql = "SELECT * FROM students WHERE registration_number = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, regNo.trim());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs, false);
+                }
+            }
+        }
+        return null;
+    }
+
     public Student findById(int id) throws SQLException {
         String sql = "SELECT * FROM students WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -36,17 +51,19 @@ public class StudentDAO {
     }
 
     public int create(Student student) throws SQLException {
-        String sql = "INSERT INTO students (name, email, password_hash, department, college, admission_year, grading_scale) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO students (name, email, password_hash, department, college, admission_year, grading_scale, registration_number, current_academic_year) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, student.getName().trim());
-            ps.setString(2, student.getEmail().trim().toLowerCase());
+            ps.setString(1, student.getName() != null ? student.getName().trim() : "");
+            ps.setString(2, student.getEmail() != null ? student.getEmail().trim().toLowerCase() : "");
             ps.setString(3, student.getPasswordHash());
-            ps.setString(4, student.getDepartment().trim());
-            ps.setString(5, student.getCollege().trim());
+            ps.setString(4, student.getDepartment() != null ? student.getDepartment().trim() : "");
+            ps.setString(5, student.getCollege() != null ? student.getCollege().trim() : "");
             ps.setInt(6, student.getAdmissionYear());
             ps.setString(7, student.getGradingScale() != null ? student.getGradingScale() : "10-POINT");
+            ps.setString(8, student.getRegistrationNumber() != null ? student.getRegistrationNumber().trim() : null);
+            ps.setString(9, student.getCurrentAcademicYear() != null ? student.getCurrentAcademicYear().trim() : "2024-2025");
 
             ps.executeUpdate();
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
@@ -59,15 +76,15 @@ public class StudentDAO {
     }
 
     public boolean updateProfile(Student student) throws SQLException {
-        String sql = "UPDATE students SET name = ?, department = ?, college = ?, admission_year = ?, grading_scale = ? " +
+        String sql = "UPDATE students SET name = ?, department = ?, college = ?, admission_year = ?, current_academic_year = ? " +
                      "WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, student.getName().trim());
-            ps.setString(2, student.getDepartment().trim());
-            ps.setString(3, student.getCollege().trim());
+            ps.setString(2, student.getDepartment() != null ? student.getDepartment().trim() : "");
+            ps.setString(3, student.getCollege() != null ? student.getCollege().trim() : "");
             ps.setInt(4, student.getAdmissionYear());
-            ps.setString(5, student.getGradingScale());
+            ps.setString(5, student.getCurrentAcademicYear() != null ? student.getCurrentAcademicYear().trim() : "2024-2025");
             ps.setInt(6, student.getId());
             return ps.executeUpdate() > 0;
         }
@@ -86,6 +103,7 @@ public class StudentDAO {
     private Student mapRow(ResultSet rs, boolean includePasswordHash) throws SQLException {
         Student s = new Student();
         s.setId(rs.getInt("id"));
+        s.setRegistrationNumber(rs.getString("registration_number"));
         s.setName(rs.getString("name"));
         s.setEmail(rs.getString("email"));
         if (includePasswordHash) {
@@ -94,6 +112,7 @@ public class StudentDAO {
         s.setDepartment(rs.getString("department"));
         s.setCollege(rs.getString("college"));
         s.setAdmissionYear(rs.getInt("admission_year"));
+        s.setCurrentAcademicYear(rs.getString("current_academic_year"));
         s.setGradingScale(rs.getString("grading_scale"));
         s.setAvatarUrl(rs.getString("avatar_url"));
         s.setCreatedAt(rs.getTimestamp("created_at"));

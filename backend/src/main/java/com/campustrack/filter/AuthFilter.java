@@ -35,6 +35,7 @@ public class AuthFilter implements Filter {
         // Whitelisted public endpoints
         if (relativePath.startsWith("/api/auth/login") ||
             relativePath.startsWith("/api/auth/register") ||
+            relativePath.startsWith("/api/auth/logout") ||
             relativePath.startsWith("/api/health")) {
             chain.doFilter(request, response);
             return;
@@ -43,28 +44,11 @@ public class AuthFilter implements Filter {
         // Extract Authorization header
         String authHeader = req.getHeader("Authorization");
         if (authHeader == null || authHeader.trim().isEmpty()) {
-            // [DEVELOPMENT TEST IDENTITY]
-            // For Phase 1 local development and unauthenticated test harnesses,
-            // default strictly to development test student 1 (Alex Morgan).
-            // NOTE: Client-supplied IDs from request body/query are NEVER trusted.
-            req.setAttribute("studentId", 1);
-            chain.doFilter(request, response);
+            JsonUtil.sendError(res, HttpServletResponse.SC_UNAUTHORIZED, "Authentication required. Please sign in.");
             return;
         }
 
         authHeader = authHeader.trim();
-
-        // Check for dev-student testing header (e.g. "Bearer dev-student-1" or "Bearer dev-student-2")
-        // Used to test multi-student isolation (Acceptance Test 10)
-        if (authHeader.startsWith("Bearer dev-student-") || authHeader.startsWith("bearer dev-student-")) {
-            try {
-                String idPart = authHeader.substring(authHeader.lastIndexOf('-') + 1).trim();
-                int devStudentId = Integer.parseInt(idPart);
-                req.setAttribute("studentId", devStudentId);
-                chain.doFilter(request, response);
-                return;
-            } catch (NumberFormatException ignored) {}
-        }
 
         Integer studentId = JwtUtil.validateTokenAndGetStudentId(authHeader);
         if (studentId == null) {

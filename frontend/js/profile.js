@@ -15,26 +15,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const student = await ApiClient.get('/auth/me');
             if (student) {
-                document.getElementById('profileName').value = student.name || '';
+                document.getElementById('profileName').value = student.name || student.fullName || '';
+                document.getElementById('profileRegistrationNumber').value = student.registrationNumber || 'N/A';
                 document.getElementById('profileEmail').value = student.email || '';
                 document.getElementById('profileDepartment').value = student.department || '';
-                document.getElementById('profileCollege').value = student.college || '';
-                document.getElementById('profileAdmissionYear').value = student.admissionYear || 2022;
+                document.getElementById('profileCollege').value = student.college || student.collegeName || '';
+                document.getElementById('profileAdmissionYear').value = student.admissionYear || 2024;
+                document.getElementById('profileCurrentAcademicYear').value = student.currentAcademicYear || '2024-2025';
                 document.getElementById('profileGradingScale').value = student.gradingScale || '10-POINT';
 
-                document.getElementById('heroStudentName').textContent = student.name;
-                document.getElementById('heroStudentDept').textContent = `${student.department} &bull; Class of ${student.admissionYear + 4}`;
+                document.getElementById('heroStudentName').textContent = student.name || student.fullName || 'Student';
+                document.getElementById('heroStudentDept').textContent = `${student.department || ''} • Reg: ${student.registrationNumber || 'N/A'}`;
             }
         } catch (e) {
             console.error('Failed to load profile:', e);
             // Fallback to local user
             const local = ApiClient.getUser();
             if (local) {
-                document.getElementById('profileName').value = local.name || '';
+                document.getElementById('profileName').value = local.name || local.fullName || '';
+                document.getElementById('profileRegistrationNumber').value = local.registrationNumber || 'N/A';
                 document.getElementById('profileEmail').value = local.email || '';
                 document.getElementById('profileDepartment').value = local.department || '';
-                document.getElementById('profileCollege').value = local.college || '';
-                document.getElementById('heroStudentName').textContent = local.name;
+                document.getElementById('profileCollege').value = local.college || local.collegeName || '';
+                document.getElementById('profileAdmissionYear').value = local.admissionYear || 2024;
+                document.getElementById('profileCurrentAcademicYear').value = local.currentAcademicYear || '2024-2025';
+                document.getElementById('heroStudentName').textContent = local.name || 'Student';
             }
         }
 
@@ -49,22 +54,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('profileName').value.trim();
+            const email = document.getElementById('profileEmail').value.trim();
             const dept = document.getElementById('profileDepartment').value.trim();
             const college = document.getElementById('profileCollege').value.trim();
-            const year = parseInt(document.getElementById('profileAdmissionYear').value);
+            const year = parseInt(document.getElementById('profileAdmissionYear').value, 10);
+            const academicYear = document.getElementById('profileCurrentAcademicYear').value.trim();
             const scale = document.getElementById('profileGradingScale').value;
 
             try {
                 const updated = await ApiClient.put('/auth/profile', {
                     name,
+                    fullName: name,
+                    email,
                     department: dept,
                     college: college,
+                    collegeName: college,
                     admissionYear: year,
+                    currentAcademicYear: academicYear,
                     gradingScale: scale
                 });
                 ApiClient.setUser(updated);
                 ApiClient.showToast('Profile updated successfully!', 'success');
                 Auth.initNavbar();
+                loadProfile();
             } catch (err) {
                 ApiClient.showToast(err.message || 'Failed to update profile', 'danger');
             }

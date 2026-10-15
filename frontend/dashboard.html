@@ -3,382 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CampusTrack — College Journey Tracker</title>
+    <meta name="description" content="CampusTrack — College Journey Academic Dashboard. Monitor semesters, subjects, SGPA, and cumulative CGPA.">
+    <title>Academic Dashboard — CampusTrack</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
-    <!-- Redesigned Stylesheet -->
+    <!-- Custom Stylesheet -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-    <div class="app-container">
-        <!-- Sidebar Navigation (Reference Style) -->
-        <aside class="app-sidebar">
-            <div>
-                <!-- Brand Header -->
-                <a href="dashboard.html" class="brand-wrapper">
-                    <div class="brand-logo">
-                        <i class="bi bi-mortarboard-fill"></i>
-                    </div>
-                    <div>
-                        <h4 class="brand-title">CampusTrack</h4>
-                        <span class="brand-subtitle">4-Year Degree Plan</span>
-                    </div>
-                </a>
+<body class="academic-dashboard-body">
 
-                <!-- Navigation Links -->
-                <div class="nav-section-title">Academic Portal</div>
-                <ul class="sidebar-nav">
-                    <li>
-                        <a href="dashboard.html" class="sidebar-link active">
-                            <i class="bi bi-grid-fill"></i> Overview
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg bg-white border-bottom border-subtle sticky-top py-2 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="dashboard.html">
+                <div class="brand-logo" style="background: linear-gradient(135deg, #0d9488, #0f766e); width: 38px; height: 38px;">
+                    <i class="bi bi-mortarboard-fill text-white fs-5"></i>
+                </div>
+                <span class="fw-bold fs-5 text-dark" style="font-family: 'Outfit', sans-serif; letter-spacing: -0.02em;">CampusTrack</span>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <i class="bi bi-list fs-2 text-dark"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navMenu">
+                <!-- Clean 3-Item Navigation Menu -->
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold text-teal-custom" href="dashboard.html" style="color: var(--teal-accent);">
+                            <i class="bi bi-grid-fill me-1"></i> Dashboard
                         </a>
                     </li>
-                    <li>
-                        <a href="semesters.html" class="sidebar-link">
-                            <i class="bi bi-mortarboard"></i> 4-Year Journey
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-dark" href="semesters.html">
+                            <i class="bi bi-journal-bookmark-fill me-1"></i> My Semesters
                         </a>
                     </li>
-                    <li>
-                        <a href="assignments.html" class="sidebar-link">
-                            <i class="bi bi-calendar3"></i> Deadlines & Tasks
-                        </a>
-                    </li>
-                    <li>
-                        <a href="semesters.html" class="sidebar-link">
-                            <i class="bi bi-book"></i> Courses & Grades
-                        </a>
-                    </li>
-                    <li>
-                        <a href="records.html" class="sidebar-link">
-                            <i class="bi bi-award"></i> Credentials & Docs
-                        </a>
-                    </li>
-                    <li>
-                        <a href="activities.html" class="sidebar-link">
-                            <i class="bi bi-rocket-takeoff"></i> Projects & Resume
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-dark" href="profile.html">
+                            <i class="bi bi-person-circle me-1"></i> My Profile
                         </a>
                     </li>
                 </ul>
-            </div>
 
-            <!-- Sidebar Bottom: Degree Audit & User Profile -->
-            <div>
-                <!-- Degree Progress Card -->
-                <div class="sidebar-degree-card">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="small fw-bold text-primary">Degree Audit</span>
-                        <span class="badge bg-primary text-white" id="degreePercentBadge">72%</span>
-                    </div>
-                    <div class="degree-progress-bar">
-                        <div class="degree-progress-fill" id="degreeProgressFill" style="width: 72%;"></div>
-                    </div>
-                    <div class="d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
-                        <span id="degreeCreditsEarned">115/160 Credits</span>
-                        <span>Class of 2026</span>
-                    </div>
-                </div>
-
-                <!-- User Profile Bar -->
-                <div class="user-profile-bar">
-                    <div class="user-avatar" id="userAvatarLetter">A</div>
-                    <div class="user-info">
-                        <div class="user-name" id="sidebarUserName">Alex Morgan</div>
-                        <div class="user-email" id="sidebarUserEmail">alex.morgan@university.edu</div>
-                    </div>
-                    <a href="#" id="sidebarLogoutBtn" class="text-danger ms-auto fs-5" title="Sign Out">
-                        <i class="bi bi-box-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="app-main">
-            <!-- Top App Header Bar -->
-            <header class="app-topbar">
-                <div class="topbar-left">
-                    <h2 class="topbar-title">Dashboard</h2>
-                    <span class="badge bg-primary-subtle text-primary border border-primary px-2 py-1 small fw-semibold" id="topActiveSemesterBadge">
-                        Semester 5 Active
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Live Backend Status Pill -->
+                    <span id="apiStatusPill" class="badge rounded-pill bg-light text-dark border px-3 py-2 d-flex align-items-center gap-2" title="Backend API Health">
+                        <span id="apiStatusDot" class="status-dot-pulse bg-warning"></span>
+                        <span id="apiStatusText" class="small fw-medium">Connecting...</span>
                     </span>
-                </div>
-                <div class="topbar-right">
-                    <!-- Role Pill Switcher (Reference Feature) -->
-                    <div class="pill-group">
-                        <button class="pill-item active" id="roleStudentBtn"><i class="bi bi-mortarboard me-1"></i>Student</button>
-                        <button class="pill-item" id="roleAdminBtn"><i class="bi bi-shield-check me-1"></i>Lab Evaluator</button>
-                    </div>
 
-                    <!-- Theme Toggle Switcher -->
-                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-bold" id="themeToggleBtn" title="Toggle Light/Dark Theme">
-                        <i class="bi bi-moon-stars-fill me-1" id="themeIcon"></i> <span id="themeText">Dark</span>
-                    </button>
-
-                    <!-- API Status Pill -->
-                    <a href="profile.html" id="apiStatusPill" class="api-pill online" title="Backend Status">
-                        <span class="status-dot green"></span>
-                        <span>API Connected</span>
-                    </a>
-
-                    <!-- Profile Settings Link -->
-                    <a href="profile.html" class="btn btn-sm btn-light border rounded-circle p-2 shadow-sm" title="Settings">
-                        <i class="bi bi-gear-fill text-secondary"></i>
-                    </a>
-                </div>
-            </header>
-
-            <!-- 4-Year Academic Progression Banner -->
-            <div class="card p-3 mb-4 border-0 shadow-sm rounded-4" style="background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%); border: 1px solid #e0e7ff !important;">
-                <div class="row align-items-center g-3">
-                    <div class="col-lg-3">
-                        <h6 class="fw-bold text-primary mb-1"><i class="bi bi-mortarboard-fill me-1"></i> 4-Year Collegiate Journey</h6>
-                        <small class="text-secondary">Progress from 1st Year (Freshman) to 4th Year Graduation</small>
-                    </div>
-                    <div class="col-lg-9">
-                        <div class="d-flex flex-wrap gap-2 justify-content-lg-end" id="fourYearPillsContainer">
-                            <!-- Populated dynamically via JS -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Top Row: 3 Modular Cards (Matching Reference Layout) -->
-            <div class="row g-3 mb-4">
-                <!-- Card 1: Deadlines / Weekly Progress -->
-                <div class="col-lg-4">
-                    <div class="ref-card">
-                        <div class="ref-card-header">
-                            <div class="pill-group">
-                                <button class="pill-item active" id="progWeeklyTab">Weekly Progress</button>
-                                <button class="pill-item" id="progSemesterTab">Semester Progress</button>
-                            </div>
-                        </div>
-                        <div class="gauge-container">
-                            <!-- SVG Progress Ring Gauge -->
-                            <div class="gauge-circle">
-                                <svg width="140" height="140" viewBox="0 0 140 140">
-                                    <circle cx="70" cy="70" r="54" fill="none" stroke="var(--border-subtle)" stroke-width="12"></circle>
-                                    <circle id="gaugeProgressArc" cx="70" cy="70" r="54" fill="none" stroke="var(--accent-primary)" stroke-width="12"
-                                            stroke-dasharray="339.29" stroke-dashoffset="180" stroke-linecap="round"
-                                            transform="rotate(-90 70 70)" style="transition: stroke-dashoffset 0.8s ease;"></circle>
-                                </svg>
-                                <div class="gauge-text">
-                                    <div class="gauge-val" id="gaugeMainVal">0/3</div>
-                                </div>
-                            </div>
-                            <div class="gauge-label" id="gaugeSubLabel">Due This Week</div>
-                        </div>
-                        <div class="text-center pt-2 border-top border-subtle">
-                            <small class="text-muted" id="gaugeFooterText"><i class="bi bi-check2-all text-success me-1"></i>3 assignments remaining this cycle</small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 2: Course Progress (With Subject Progress Bars) -->
-                <div class="col-lg-4">
-                    <div class="ref-card">
-                        <div class="ref-card-header">
-                            <h5 class="ref-card-title">Course Progress</h5>
-                            <div class="d-flex gap-1">
-                                <a href="semesters.html" class="btn btn-sm btn-light border p-1 rounded" title="Add Subject">
-                                    <i class="bi bi-plus text-primary fs-6"></i>
-                                </a>
-                                <a href="semesters.html" class="btn btn-sm btn-light border p-1 rounded" title="Manage Courses">
-                                    <i class="bi bi-trash text-danger fs-6"></i>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="course-prog-list" id="courseProgressContainer">
-                            <!-- Populated dynamically via JS -->
-                            <div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary"></div> Loading courses...</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 3: Upcoming Exams -->
-                <div class="col-lg-4">
-                    <div class="ref-card">
-                        <div class="ref-card-header">
-                            <h5 class="ref-card-title">Upcoming Exams</h5>
-                            <span class="badge bg-danger-subtle text-danger border border-danger small">High Stakes</span>
-                        </div>
-                        <div class="exam-list" id="upcomingExamsContainer">
-                            <!-- Populated dynamically via JS -->
-                            <div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-danger"></div> Loading exam schedule...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Action Bar (4 Quick-Action Buttons matching Reference) -->
-            <div class="action-bar-row">
-                <a href="records.html" class="action-btn">
-                    <i class="bi bi-cloud-arrow-up text-primary"></i> Upload Syllabus
-                </a>
-                <a href="assignments.html" class="action-btn">
-                    <i class="bi bi-box-arrow-in-down text-info"></i> Import Assignments
-                </a>
-                <a href="assignments.html" class="action-btn">
-                    <i class="bi bi-calendar-check text-warning"></i> Sync to Calendar
-                </a>
-                <button class="action-btn primary" data-bs-toggle="modal" data-bs-target="#newAssignmentModal">
-                    <i class="bi bi-plus-lg"></i> Add Assignment
-                </button>
-            </div>
-
-            <!-- Assignment Overview Table (Matching Reference Layout) -->
-            <div class="table-container-card mb-4">
-                <div class="table-header-bar">
-                    <h5 class="fw-bold mb-0">Assignment Overview</h5>
-                    <div class="search-box-wrapper">
-                        <i class="bi bi-search search-icon"></i>
-                        <input type="text" class="search-input" id="tableSearchInput" placeholder="Search assignments...">
-                    </div>
-                    <div class="table-controls">
-                        <div class="form-check form-check-inline mb-0">
-                            <input class="form-check-input" type="checkbox" id="showCompletedCheckbox">
-                            <label class="form-check-label small fw-semibold" for="showCompletedCheckbox">Show Completed</label>
-                        </div>
-                        <button class="btn btn-sm btn-outline-secondary fw-semibold" id="toggleExamsOnlyBtn">
-                            <i class="bi bi-journal-text me-1"></i> Exams Only
+                    <!-- Authenticated Student Menu -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary btn-sm rounded-pill dropdown-toggle d-flex align-items-center gap-2 px-3 py-1.5" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle text-teal-custom"></i>
+                            <span id="navStudentName" class="fw-semibold">Student</span>
                         </button>
-                        <button class="btn btn-sm btn-outline-secondary fw-semibold" id="tableFilterBtn" data-bs-toggle="dropdown">
-                            <i class="bi bi-funnel me-1"></i> Filter
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow">
-                            <li><a class="dropdown-item filter-opt" href="#" data-status="ALL">All Statuses</a></li>
-                            <li><a class="dropdown-item filter-opt" href="#" data-status="Pending">Pending Only</a></li>
-                            <li><a class="dropdown-item filter-opt" href="#" data-status="In Progress">In Progress Only</a></li>
-                            <li><a class="dropdown-item filter-opt" href="#" data-status="Submitted">Submitted</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                            <li><h6 class="dropdown-header text-uppercase small text-muted" id="navStudentDept">Student Account</h6></li>
+                            <li><a class="dropdown-item text-muted small" href="semesters.html"><i class="bi bi-journal-bookmark me-2"></i>My Semesters</a></li>
+                            <li><a class="dropdown-item text-muted small" href="profile.html"><i class="bi bi-person-circle me-2"></i>My Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <button class="dropdown-item text-danger small d-flex align-items-center gap-2" id="navLogoutBtn">
+                                    <i class="bi bi-box-arrow-right"></i> Sign Out
+                                </button>
+                            </li>
                         </ul>
                     </div>
                 </div>
-
-                <!-- Assignment Table -->
-                <div class="table-responsive">
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>STATUS</th>
-                                <th>DUE</th>
-                                <th>ASSIGNMENT</th>
-                                <th>TYPE</th>
-                                <th>COURSE</th>
-                                <th class="text-end">ACTIONS</th>
-                            </tr>
-                        </thead>
-                        <tbody id="referenceTableBody">
-                            <tr>
-                                <td colspan="6" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary"></div> Loading deliverables...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Analytics & Trends Section (Collapsible / Visual Grid) -->
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <div class="ref-card">
-                        <div class="ref-card-header">
-                            <h5 class="ref-card-title"><i class="bi bi-graph-up text-primary me-2"></i>Multi-Semester SGPA Progression</h5>
-                            <span class="badge bg-primary-subtle text-primary border border-primary">10-Point Scale</span>
-                        </div>
-                        <div style="position: relative; height: 230px;">
-                            <canvas id="sgpaTrendChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="ref-card">
-                        <div class="ref-card-header">
-                            <h5 class="ref-card-title"><i class="bi bi-pie-chart-fill text-warning me-2"></i>Task Status Distribution</h5>
-                            <span class="badge bg-warning-subtle text-warning border border-warning">Current Cycle</span>
-                        </div>
-                        <div style="position: relative; height: 230px;">
-                            <canvas id="assignmentStatusChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Modal: Add Assignment (Quick Add from Reference Button) -->
-    <div class="modal fade" id="newAssignmentModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg p-3 rounded-4">
-                <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle text-primary me-2"></i>New Assignment / Deliverable</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form id="quickAddAssignmentForm">
-                    <div class="modal-body py-3">
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Assignment Title</label>
-                            <input type="text" id="quickTitle" class="form-control" placeholder="e.g. Distributed Hash Table Report" required>
-                        </div>
-                        <div class="row g-2 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Course / Subject</label>
-                                <select id="quickCourseSelect" class="form-select" required>
-                                    <option value="6">CS 501: Web Technologies</option>
-                                    <option value="7">CS 502: Machine Learning</option>
-                                    <option value="8">CS 503: Software Engineering</option>
-                                    <option value="9">CS 504: Information Security</option>
-                                    <option value="10">CS 508: Web Tech Lab</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Type</label>
-                                <select id="quickTypeSelect" class="form-select">
-                                    <option value="assignment">Assignment</option>
-                                    <option value="exam">Exam / Test</option>
-                                    <option value="lab">Lab Exercise</option>
-                                    <option value="pre-class">Pre-class Activity</option>
-                                    <option value="project">Project Milestone</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row g-2 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Due Date & Time</label>
-                                <input type="datetime-local" id="quickDueDate" class="form-control" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Priority</label>
-                                <select id="quickPrioritySelect" class="form-select">
-                                    <option value="URGENT">URGENT</option>
-                                    <option value="HIGH" selected>HIGH</option>
-                                    <option value="MEDIUM">MEDIUM</option>
-                                    <option value="LOW">LOW</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Instructions / Deliverable Notes</label>
-                            <textarea id="quickDescription" class="form-control" rows="2" placeholder="Submission criteria or link..."></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-top">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary px-4 fw-bold">Add to Overview</button>
-                    </div>
-                </form>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <!-- Bootstrap Bundle JS -->
+    <!-- Main Container -->
+    <main class="container py-4 py-md-5">
+
+        <!-- Top Welcome Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+                <h1 class="academic-page-title mb-1">Academic Overview</h1>
+                <p class="text-muted small mb-0">High-level summary of your undergraduate semesters, coursework subjects, and cumulative CGPA.</p>
+            </div>
+            <div>
+                <a href="semesters.html" class="btn btn-academic-teal shadow-sm">
+                    <i class="bi bi-journal-bookmark-fill me-1"></i> Manage Semesters
+                </a>
+            </div>
+        </div>
+
+        <!-- 1. Academic Performance & Summary KPI Banner (4 Summary Cards) -->
+        <section class="kpi-academic-summary-row mb-4">
+            <!-- KPI 1: Total Semesters -->
+            <div class="summary-kpi-card">
+                <div>
+                    <div class="kpi-label">Total Semesters</div>
+                    <div class="kpi-value text-dark" id="dashTotalSemesters">0</div>
+                    <p class="kpi-subtext" id="dashSemestersSubtext">0 Completed &bull; 0 Active</p>
+                </div>
+                <div class="kpi-icon-bubble total">
+                    <i class="bi bi-calendar3"></i>
+                </div>
+            </div>
+
+            <!-- KPI 2: Active Term -->
+            <div class="summary-kpi-card">
+                <div>
+                    <div class="kpi-label">Current Term</div>
+                    <div class="kpi-value text-teal-custom" id="dashCurrentTerm">Term 1</div>
+                    <p class="kpi-subtext" id="dashCurrentYear">Academic Year Pending</p>
+                </div>
+                <div class="kpi-icon-bubble active">
+                    <i class="bi bi-play-circle-fill"></i>
+                </div>
+            </div>
+
+            <!-- KPI 3: Registered Subjects -->
+            <div class="summary-kpi-card">
+                <div>
+                    <div class="kpi-label">Total Coursework</div>
+                    <div class="kpi-value text-primary" id="dashTotalSubjects">0</div>
+                    <p class="kpi-subtext" id="dashTotalCredits">0 Total Credits</p>
+                </div>
+                <div class="kpi-icon-bubble" style="background-color: #f5f3ff; color: #7c3aed;">
+                    <i class="bi bi-book-half"></i>
+                </div>
+            </div>
+
+            <!-- KPI 4: Cumulative CGPA -->
+            <div class="summary-kpi-card">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <div class="kpi-label mb-0">Cumulative CGPA</div>
+                        <span class="badge bg-success bg-opacity-25 text-success small" id="cgpaBadge">10-Point Scale</span>
+                    </div>
+                    <div class="kpi-value text-success" id="dashCgpaValue">—</div>
+                    <p class="kpi-subtext" id="dashCgpaSubtext">Credit-weighted average</p>
+                </div>
+                <div class="kpi-icon-bubble completed">
+                    <i class="bi bi-award-fill"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Collegiate Progression Timeline Banner -->
+        <div class="card p-3 mb-4 border-0 shadow-sm rounded-4 degree-timeline-card">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-3">
+                    <h6 class="fw-bold text-primary mb-1"><i class="bi bi-mortarboard-fill me-1"></i> Degree Timeline</h6>
+                    <small class="text-secondary">Track term-by-term progression and completion status</small>
+                </div>
+                <div class="col-lg-9">
+                    <div class="d-flex flex-wrap gap-2 justify-content-lg-end" id="fourYearPillsContainer">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Main Dashboard Visual Row: SGPA Trajectory & Active Term Subjects -->
+        <div class="row g-4 mb-4">
+            <!-- SGPA Progression Chart -->
+            <div class="col-lg-7">
+                <div class="card p-4 border-0 shadow-sm rounded-4 h-100 bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif; color: var(--navy-primary);">
+                                <i class="bi bi-graph-up-arrow text-teal-custom me-2"></i>Multi-Semester SGPA Progression
+                            </h5>
+                            <p class="text-muted small mb-0">Grade performance calculated from official examination results and subject credits.</p>
+                        </div>
+                        <span class="badge bg-light text-secondary border px-2.5 py-1.5 small">10.0 Max</span>
+                    </div>
+                    <div style="position: relative; height: 260px;">
+                        <canvas id="sgpaTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Term Subjects Summary -->
+            <div class="col-lg-5">
+                <div class="card p-4 border-0 shadow-sm rounded-4 h-100 bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif; color: var(--navy-primary);">
+                                <i class="bi bi-journal-check text-teal-custom me-2"></i>Active Term Subjects
+                            </h5>
+                            <p class="text-muted small mb-0" id="activeSemesterCourseSubtitle">Enrolled coursework and assessment scores</p>
+                        </div>
+                        <a href="semesters.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                            View All
+                        </a>
+                    </div>
+                    <div class="course-prog-list" id="courseProgressContainer">
+                        <div class="text-center py-4 text-muted">
+                            <span class="spinner-border spinner-border-sm text-teal-custom me-2"></span> Loading coursework...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Semesters Summary Grid -->
+        <div class="card p-4 border-0 shadow-sm rounded-4 bg-white mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif; color: var(--navy-primary);">
+                        <i class="bi bi-collection text-teal-custom me-2"></i>Semester Academic Performance Records
+                    </h5>
+                    <p class="text-muted small mb-0">Complete credit-weighted breakdown across all enrolled terms.</p>
+                </div>
+                <a href="semesters.html" class="btn btn-academic-teal btn-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Add Semester
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Semester</th>
+                            <th>Academic Year</th>
+                            <th>Status</th>
+                            <th class="text-center">Subjects</th>
+                            <th class="text-center">Registered Credits</th>
+                            <th class="text-center">Evaluated Credits</th>
+                            <th class="text-center">Semester SGPA</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="semesterSummaryTableBody">
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                <span class="spinner-border spinner-border-sm text-teal-custom me-2"></span> Loading academic records...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="container py-4 text-center border-top mt-5">
+        <p class="text-muted small mb-0">CampusTrack &bull; Academic Management & Performance Tracker</p>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- App Scripts -->
+    <!-- App Config & API Client -->
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
+    <!-- Dashboard Controller -->
     <script src="js/dashboard.js"></script>
 </body>
 </html>

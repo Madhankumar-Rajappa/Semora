@@ -30,16 +30,10 @@
                         <a class="nav-link" href="dashboard.html"><i class="bi bi-grid-fill"></i> Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="semesters.html"><i class="bi bi-journal-bookmark-fill"></i> Semesters & Marks</a>
+                        <a class="nav-link" href="semesters.html"><i class="bi bi-journal-bookmark-fill"></i> My Semesters</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="assignments.html"><i class="bi bi-clock-history"></i> Assignments</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="records.html"><i class="bi bi-award-fill"></i> Certificates & Docs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="activities.html"><i class="bi bi-rocket-takeoff-fill"></i> Projects & Activities</a>
+                        <a class="nav-link active" href="profile.html"><i class="bi bi-person-circle"></i> My Profile</a>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center gap-3">
@@ -82,37 +76,45 @@
                             <i class="bi bi-person-badge"></i>
                         </div>
                         <div>
-                            <h4 class="text-white fw-bold mb-0" id="heroStudentName">Student Name</h4>
+                            <h4 class="fw-bold hero-heading mb-0" id="heroStudentName">Student Name</h4>
                             <p class="text-muted small mb-0" id="heroStudentDept">Department of Computer Science</p>
                         </div>
                     </div>
 
                     <form id="profileForm">
-                        <h5 class="text-white fw-bold mb-3"><i class="bi bi-pencil-square text-info me-2"></i>Edit Student Information</h5>
+                        <h5 class="fw-bold hero-heading mb-3"><i class="bi bi-pencil-square text-info me-2"></i>Edit Student Information</h5>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label text-light small fw-medium">Full Name</label>
+                                <label class="form-label text-secondary small fw-semibold">Full Name</label>
                                 <input type="text" id="profileName" class="form-control form-control-custom" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small fw-medium">College Email (Read-Only)</label>
-                                <input type="email" id="profileEmail" class="form-control form-control-custom" readonly disabled>
+                                <label class="form-label text-secondary small fw-semibold">Student ID / Registration No (Read-Only)</label>
+                                <input type="text" id="profileRegistrationNumber" class="form-control form-control-custom" readonly disabled>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small fw-medium">Department / Discipline</label>
-                                <input type="text" id="profileDepartment" class="form-control form-control-custom" required>
+                                <label class="form-label text-secondary small fw-semibold">College Email</label>
+                                <input type="email" id="profileEmail" class="form-control form-control-custom" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small fw-medium">College / University</label>
+                                <label class="form-label text-secondary small fw-semibold">College / University</label>
                                 <input type="text" id="profileCollege" class="form-control form-control-custom" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small fw-medium">Admission Year</label>
+                                <label class="form-label text-secondary small fw-semibold">Department / Discipline</label>
+                                <input type="text" id="profileDepartment" class="form-control form-control-custom" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-secondary small fw-semibold">Admission Year</label>
                                 <input type="number" id="profileAdmissionYear" class="form-control form-control-custom" min="2000" max="2035" required>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-light small fw-medium">Grading System</label>
-                                <select id="profileGradingScale" class="form-select form-select-custom">
+                            <div class="col-md-3">
+                                <label class="form-label text-secondary small fw-semibold">Current Academic Year</label>
+                                <input type="text" id="profileCurrentAcademicYear" class="form-control form-control-custom" placeholder="2024-2025" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label text-secondary small fw-semibold">Grading System</label>
+                                <select id="profileGradingScale" class="form-select form-control-custom">
                                     <option value="10-POINT" selected>10-Point Scale (Standard UGC / AICTE)</option>
                                     <option value="4-POINT">4.0 GPA Scale (US / International)</option>
                                     <option value="PERCENTAGE">Percentage / Marks Based</option>
@@ -129,19 +131,19 @@
 
                 <!-- Password Change Card -->
                 <div class="card-glass p-4">
-                    <h5 class="text-white fw-bold mb-3"><i class="bi bi-shield-lock text-warning me-2"></i>Update Password</h5>
+                    <h5 class="fw-bold hero-heading mb-3"><i class="bi bi-shield-lock text-warning me-2"></i>Update Password</h5>
                     <form id="passwordForm">
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <label class="form-label text-light small fw-medium">Current Password</label>
+                                <label class="form-label text-secondary small fw-semibold">Current Password</label>
                                 <input type="password" id="oldPassword" class="form-control form-control-custom" placeholder="••••••••" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small fw-medium">New Password</label>
+                                <label class="form-label text-secondary small fw-semibold">New Password</label>
                                 <input type="password" id="newPassword" class="form-control form-control-custom" placeholder="••••••••" minlength="6" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small fw-medium">Confirm New Password</label>
+                                <label class="form-label text-secondary small fw-semibold">Confirm New Password</label>
                                 <input type="password" id="confirmPassword" class="form-control form-control-custom" placeholder="••••••••" minlength="6" required>
                             </div>
                             <div class="col-12 text-end pt-2">
@@ -161,7 +163,7 @@
                         <div class="stat-icon bg-info bg-opacity-20 text-info mb-0" style="width: 44px; height: 44px;">
                             <i class="bi bi-hdd-network"></i>
                         </div>
-                        <h5 class="text-white fw-bold mb-0">Configurable API Base URL</h5>
+                        <h5 class="fw-bold hero-heading mb-0">Configurable API Base URL</h5>
                     </div>
                     <p class="text-muted small mb-3">
                         Per project requirements, the Vercel-hosted frontend calls the Java Servlets REST API without hardcoded URLs.
@@ -170,7 +172,7 @@
 
                     <form id="apiConfigForm">
                         <div class="mb-3">
-                            <label class="form-label text-light small fw-medium">API Base URL</label>
+                            <label class="form-label text-secondary small fw-semibold">API Base URL</label>
                             <input type="url" id="customApiBaseUrl" class="form-control form-control-custom" placeholder="http://localhost:8080/api or https://..." required>
                             <small class="text-secondary mt-1 d-block">Default Local: <code>http://localhost:8080/api</code></small>
                         </div>
@@ -191,15 +193,15 @@
 
                 <!-- Laboratory & Deployment Guide Card -->
                 <div class="card-glass p-4">
-                    <h6 class="text-white fw-bold mb-2"><i class="bi bi-info-circle-fill text-primary me-2"></i>Deployment Architecture Guide</h6>
+                    <h6 class="fw-bold hero-heading mb-2"><i class="bi bi-info-circle-fill text-primary me-2"></i>Deployment Architecture Guide</h6>
                     <div class="small text-muted mb-3">
                         CampusTrack separates client and server for cloud scalability:
                     </div>
                     <ul class="small text-secondary ps-3 mb-0">
-                        <li class="mb-2"><strong class="text-light">Frontend (Vercel):</strong> Zero-maintenance static hosting with global CDN delivery.</li>
-                        <li class="mb-2"><strong class="text-light">Backend (Tomcat / Java Hosting):</strong> Deploy the generated <code>campustrack.war</code> to Tomcat 10, Render, Railway, or AWS.</li>
-                        <li class="mb-2"><strong class="text-light">Database (MySQL):</strong> Managed MySQL accessed via JDBC with connection pooling.</li>
-                        <li><strong class="text-light">Lab Demo (JSP):</strong> Access traditional JSP pages directly at <code>/jsp/index.jsp</code> on the Tomcat server.</li>
+                        <li class="mb-2"><strong class="text-primary">Frontend (Vercel):</strong> Zero-maintenance static hosting with global CDN delivery.</li>
+                        <li class="mb-2"><strong class="text-primary">Backend (Tomcat / Java Hosting):</strong> Deploy the generated <code>campustrack.war</code> to Tomcat 10, Render, Railway, or AWS.</li>
+                        <li class="mb-2"><strong class="text-primary">Database (MySQL):</strong> Managed MySQL accessed via JDBC with connection pooling.</li>
+                        <li><strong class="text-primary">Lab Demo (JSP):</strong> Access traditional JSP pages directly at <code>/jsp/index.jsp</code> on the Tomcat server.</li>
                     </ul>
                 </div>
             </div>

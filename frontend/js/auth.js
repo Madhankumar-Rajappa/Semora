@@ -10,11 +10,11 @@ const Auth = (function () {
     // Protect private pages
     function requireAuth() {
         if (!isAuthenticated()) {
-            window.location.href = 'index.html';
+            window.location.href = 'login.html';
         }
     }
 
-    // Redirect logged in user from landing page
+    // Redirect logged in user from landing page / auth pages
     function redirectIfAuthenticated() {
         if (isAuthenticated()) {
             window.location.href = 'dashboard.html';
@@ -27,21 +27,24 @@ const Auth = (function () {
             const data = await ApiClient.post('/auth/login', { email, password });
             ApiClient.setToken(data.token);
             ApiClient.setUser({
-                id: data.studentId,
-                name: data.name,
+                id: data.studentId || data.id,
+                name: data.name || data.fullName,
+                fullName: data.fullName || data.name,
+                registrationNumber: data.registrationNumber,
                 email: data.email,
                 department: data.department,
-                college: data.college,
-                admissionYear: data.admissionYear
+                college: data.college || data.collegeName,
+                collegeName: data.collegeName || data.college,
+                admissionYear: data.admissionYear,
+                currentAcademicYear: data.currentAcademicYear
             });
-            ApiClient.showToast(`Welcome back, ${data.name}!`, 'success');
+            ApiClient.showToast(`Welcome back, ${data.name || 'Student'}!`, 'success');
             setTimeout(() => {
                 window.location.href = 'dashboard.html';
-            }, 800);
-            return true;
+            }, 600);
+            return { success: true, data };
         } catch (error) {
-            ApiClient.showToast(error.message || 'Login failed', 'danger');
-            return false;
+            return { success: false, message: error.message || 'Invalid email or password.' };
         }
     }
 
@@ -49,23 +52,14 @@ const Auth = (function () {
     async function register(studentData) {
         try {
             const data = await ApiClient.post('/auth/register', studentData);
-            ApiClient.setToken(data.token);
-            ApiClient.setUser({
-                id: data.studentId,
-                name: data.name,
-                email: data.email,
-                department: data.department,
-                college: data.college,
-                admissionYear: data.admissionYear
-            });
-            ApiClient.showToast('Account created successfully!', 'success');
+            // After successful registration, redirect to Sign In page
+            ApiClient.showToast('Registration successful! Please sign in.', 'success');
             setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 900);
-            return true;
+                window.location.href = `login.html?registered=true&email=${encodeURIComponent(studentData.email || '')}`;
+            }, 1000);
+            return { success: true, data };
         } catch (error) {
-            ApiClient.showToast(error.message || 'Registration failed', 'danger');
-            return false;
+            return { success: false, message: error.message || 'Registration failed.' };
         }
     }
 
@@ -74,11 +68,15 @@ const Auth = (function () {
         const user = ApiClient.getUser();
         const userNameEl = document.getElementById('navStudentName');
         const userDeptEl = document.getElementById('navStudentDept');
+        const userRegEl = document.getElementById('navStudentReg');
         if (userNameEl && user) {
-            userNameEl.textContent = user.name || 'Student';
+            userNameEl.textContent = user.name || user.fullName || 'Student';
         }
         if (userDeptEl && user) {
-            userDeptEl.textContent = user.department || 'Undergraduate';
+            userDeptEl.textContent = user.department || 'Department of Engineering';
+        }
+        if (userRegEl && user) {
+            userRegEl.textContent = user.registrationNumber || '';
         }
 
         // Logout handlers

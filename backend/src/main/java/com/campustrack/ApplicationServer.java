@@ -88,10 +88,6 @@ public class ApplicationServer {
         Tomcat.addServlet(ctx, "SemesterServlet", new SemesterServlet()).addMapping("/api/semesters/*");
         Tomcat.addServlet(ctx, "SubjectServlet", new SubjectServlet()).addMapping("/api/subjects/*");
         Tomcat.addServlet(ctx, "AssessmentServlet", new AssessmentServlet()).addMapping("/api/assessments/*");
-        Tomcat.addServlet(ctx, "AssignmentServlet", new AssignmentServlet()).addMapping("/api/assignments/*");
-        Tomcat.addServlet(ctx, "RecordServlet", new RecordServlet()).addMapping("/api/records/*");
-        Tomcat.addServlet(ctx, "ActivityServlet", new ActivityServlet()).addMapping("/api/activities/*");
-        Tomcat.addServlet(ctx, "AnalyticsServlet", new AnalyticsServlet()).addMapping("/api/analytics/*");
 
         // Start server
         tomcat.start();

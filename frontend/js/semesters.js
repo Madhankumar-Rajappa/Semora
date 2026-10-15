@@ -4,6 +4,10 @@
  * Strictly communicates with Java Servlets REST API backed by MySQL.
  */
 document.addEventListener('DOMContentLoaded', () => {
+    // Require student authentication
+    Auth.requireAuth();
+    Auth.initNavbar();
+
     let allSemesters = [];
     let pendingStatusChange = null;
     let pendingDeleteSemester = null;
@@ -519,34 +523,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------------------
-    // Multi-Student Isolation Switcher (Acceptance Test 10)
+    // Student Identity UI
     // -------------------------------------------------------------------------
     function updateStudentIdentityUI() {
-        const studentId = ApiClient.getDevStudentId();
-        const studentName = studentId === 2 ? 'Jordan Lee' : 'Alex Morgan';
+        const user = ApiClient.getUser();
+        const studentName = user ? (user.name || user.fullName || 'Student') : 'Student';
+        const regNo = user ? (user.registrationNumber || '') : '';
 
-        if (currentStudentLabel) currentStudentLabel.textContent = `${studentName} (Student #${studentId})`;
-        if (activeStudentBadge) activeStudentBadge.textContent = `${studentName} (ID: ${studentId})`;
-
-        if (quickToggleStudentBtn) {
-            const otherId = studentId === 1 ? 2 : 1;
-            const otherName = studentId === 1 ? 'Jordan Lee' : 'Alex Morgan';
-            quickToggleStudentBtn.textContent = `Switch to ${otherName} (Student #${otherId})`;
-            quickToggleStudentBtn.dataset.studentId = String(otherId);
-            quickToggleStudentBtn.dataset.studentName = otherName;
-        }
+        if (currentStudentLabel) currentStudentLabel.textContent = regNo ? `${studentName} (${regNo})` : studentName;
+        if (activeStudentBadge) activeStudentBadge.textContent = regNo ? `${studentName} (${regNo})` : studentName;
     }
-
-    document.querySelectorAll('.switch-student-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetId = parseInt(btn.dataset.studentId);
-            ApiClient.setDevStudentId(targetId);
-            updateStudentIdentityUI();
-            ApiClient.showToast(`Switched active student to ${btn.dataset.studentName} (ID: ${targetId})`, 'info');
-            loadSemesters();
-        });
-    });
 
     // Retry connection button
     if (retryConnectionBtn) {

@@ -33,10 +33,20 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navMenu">
-                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="dashboard.html">
+                            <i class="bi bi-grid-fill me-1"></i> Dashboard
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link active fw-semibold text-teal-custom" href="semesters.html" style="color: var(--teal-accent);">
                             <i class="bi bi-journal-bookmark-fill me-1"></i> My Semesters
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="profile.html">
+                            <i class="bi bi-person-circle me-1"></i> My Profile
                         </a>
                     </li>
                 </ul>
@@ -48,26 +58,23 @@
                         <span id="apiStatusText" class="small fw-medium">Connecting...</span>
                     </span>
 
-                    <!-- Student Profile & Switcher for Isolation Testing -->
+                    <!-- Authenticated Student Menu -->
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary btn-sm rounded-pill dropdown-toggle d-flex align-items-center gap-2 px-3 py-1.5" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle text-teal-custom"></i>
-                            <span id="currentStudentLabel" class="fw-semibold">Alex Morgan (Student 1)</span>
+                            <span id="navStudentName" class="fw-semibold">Student</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
-                            <li><h6 class="dropdown-header text-uppercase small text-muted">Test Student Identity</h6></li>
-                            <li>
-                                <button class="dropdown-item d-flex align-items-center gap-2 switch-student-btn" data-student-id="1" data-student-name="Alex Morgan">
-                                    <i class="bi bi-person-fill text-primary"></i> Alex Morgan (Student #1)
-                                </button>
-                            </li>
-                            <li>
-                                <button class="dropdown-item d-flex align-items-center gap-2 switch-student-btn" data-student-id="2" data-student-name="Jordan Lee">
-                                    <i class="bi bi-person-badge text-success"></i> Jordan Lee (Student #2)
-                                </button>
-                            </li>
+                            <li><h6 class="dropdown-header text-uppercase small text-muted" id="navStudentDept">Student Account</h6></li>
+                            <li><a class="dropdown-item text-muted small" href="dashboard.html"><i class="bi bi-grid-fill me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item text-muted small" href="profile.html"><i class="bi bi-person-circle me-2"></i>My Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-muted small" href="#" id="reloadApiBtn"><i class="bi bi-arrow-clockwise me-2"></i>Reload Data</a></li>
+                            <li>
+                                <button class="dropdown-item text-danger small d-flex align-items-center gap-2" id="navLogoutBtn">
+                                    <i class="bi bi-box-arrow-right"></i> Sign Out
+                                </button>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -91,20 +98,6 @@
             </div>
         </header>
 
-        <!-- Student Multi-Tenancy Indicator Banner -->
-        <div class="student-switcher-bar d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-shield-lock-fill text-teal-custom fs-5"></i>
-                <span class="small text-muted">Active Student Scope:</span>
-                <span class="badge bg-light text-dark border px-2 py-1 fw-bold" id="activeStudentBadge">Alex Morgan (ID: 1)</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <span class="small text-muted">Test Isolation:</span>
-                <button class="btn btn-sm btn-outline-secondary py-0 px-2 small switch-student-btn" id="quickToggleStudentBtn" data-student-id="2" data-student-name="Jordan Lee">
-                    Switch to Student #2
-                </button>
-            </div>
-        </div>
 
         <!-- Summary KPI Cards -->
         <section class="row g-3 g-md-4 mb-4 mb-md-5" id="summaryCardsSection">
@@ -393,6 +386,7 @@
     <!-- App Config & API Client -->
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
     <!-- Page Controller -->
     <script src="js/semesters.js"></script>
 </body>

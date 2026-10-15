@@ -165,6 +165,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
 
+    Auth.requireAuth();
+    Auth.initNavbar();
+
     currentSemesterId = resolveSemesterId();
 
     if (!currentSemesterId) {
@@ -172,34 +175,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    initIdentitySwitcher();
+    updateStudentLabelUI();
     checkBackendHealth();
     loadSemesterWorkspace();
 
     // =========================================================================
-    // 2. IDENTITY SWITCHER & BACKEND HEALTH
+    // 2. BACKEND HEALTH CHECK
     // =========================================================================
 
-    function initIdentitySwitcher() {
-        const activeDevId = ApiClient.getDevStudentId ? ApiClient.getDevStudentId() : 1;
-        updateStudentLabelUI(activeDevId);
-
-        document.querySelectorAll('.switch-student-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = parseInt(btn.dataset.studentId);
-                const targetName = btn.dataset.studentName;
-                ApiClient.setDevStudentId(targetId);
-                updateStudentLabelUI(targetId, targetName);
-                ApiClient.showToast(`Switched active identity to ${targetName} (ID: ${targetId})`, 'info');
-                // Reload workspace for new identity
-                loadSemesterWorkspace();
-            });
-        });
-    }
-
-    function updateStudentLabelUI(id, name) {
-        const label = name ? `${name} (Student ${id})` : (id === 1 ? 'Alex Morgan (Student 1)' : 'Jordan Lee (Student 2)');
+    function updateStudentLabelUI() {
+        const user = ApiClient.getUser();
+        const label = user ? (user.name || user.fullName || 'Student') : 'Student';
         if (currentStudentLabel) currentStudentLabel.textContent = label;
         if (detailStudentScopeLabel) detailStudentScopeLabel.textContent = label;
     }

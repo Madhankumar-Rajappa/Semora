@@ -1,36 +1,45 @@
 package com.campustrack.util;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Base64;
 
 /**
- * Utility for hashing and verifying passwords securely with SHA-256 and salt.
+ * Utility for hashing and verifying passwords securely with BCrypt.
  */
 public class PasswordUtil {
 
-    private static final SecureRandom RANDOM = new SecureRandom();
-
+    /**
+     * Hashes password using BCrypt with workload 12.
+     */
     public static String hashPassword(String plainPassword) {
         if (plainPassword == null || plainPassword.isEmpty()) {
             throw new IllegalArgumentException("Password cannot be empty");
         }
-        byte[] salt = new byte[16];
-        RANDOM.nextBytes(salt);
-        String saltBase64 = Base64.getEncoder().encodeToString(salt);
-
-        String hash = computeHash(plainPassword, salt);
-        return saltBase64 + ":" + hash;
+        return BCrypt.hashpw(plainPassword, BCrypt.gensalt(12));
     }
 
+    /**
+     * Verifies plain password against stored hash (supporting BCrypt, salt:sha256, and raw sha256).
+     */
     public static boolean verifyPassword(String plainPassword, String storedHash) {
         if (plainPassword == null || storedHash == null) {
             return false;
         }
 
-        // Support both formatted "salt:hash" and raw SHA-256 hashes (for seed data)
+        // 1. BCrypt verification ($2a$, $2b$, $2y$)
+        if (storedHash.startsWith("$2a$") || storedHash.startsWith("$2b$") || storedHash.startsWith("$2y$")) {
+            try {
+                return BCrypt.checkpw(plainPassword, storedHash);
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        // 2. Legacy salt:hash SHA-256
         if (storedHash.contains(":")) {
             String[] parts = storedHash.split(":", 2);
             if (parts.length != 2) return false;
@@ -42,7 +51,7 @@ public class PasswordUtil {
                 return false;
             }
         } else {
-            // Direct SHA-256 comparison for demo seed accounts
+            // 3. Raw SHA-256 fallback for demo seed accounts
             String rawHex = computeRawSha256(plainPassword);
             return constantTimeEquals(storedHash, rawHex);
         }

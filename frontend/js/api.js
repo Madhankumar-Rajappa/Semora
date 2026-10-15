@@ -8,17 +8,19 @@ const ApiClient = (function () {
     const DEV_STUDENT_KEY = 'CAMPUS_TRACK_DEV_STUDENT_ID';
 
     function getToken() {
-        return localStorage.getItem(TOKEN_KEY);
+        return sessionStorage.getItem(TOKEN_KEY);
     }
 
     function setToken(token) {
-        if (token) localStorage.setItem(TOKEN_KEY, token);
-        else localStorage.removeItem(TOKEN_KEY);
+        if (token) sessionStorage.setItem(TOKEN_KEY, token);
+        else sessionStorage.removeItem(TOKEN_KEY);
+        // Ensure legacy localStorage is clean
+        localStorage.removeItem(TOKEN_KEY);
     }
 
     function getUser() {
         try {
-            const raw = localStorage.getItem(USER_KEY);
+            const raw = sessionStorage.getItem(USER_KEY);
             return raw ? JSON.parse(raw) : null;
         } catch (e) {
             return null;
@@ -26,26 +28,27 @@ const ApiClient = (function () {
     }
 
     function setUser(user) {
-        if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
-        else localStorage.removeItem(USER_KEY);
+        if (user) sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+        else sessionStorage.removeItem(USER_KEY);
+        // Ensure legacy localStorage is clean
+        localStorage.removeItem(USER_KEY);
     }
 
-    function getDevStudentId() {
-        const id = localStorage.getItem(DEV_STUDENT_KEY);
-        return id ? parseInt(id) : 1; // Default to Student ID 1 (Alex Morgan)
-    }
-
-    function setDevStudentId(id) {
-        localStorage.setItem(DEV_STUDENT_KEY, String(id));
-        // Also clear normal token so dev header takes effect
-        localStorage.removeItem(TOKEN_KEY);
-    }
-
-    function logout() {
+    async function logout() {
+        try {
+            const token = getToken();
+            if (token) {
+                await fetch(`${AppConfig.getApiBaseUrl()}/auth/logout`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            }
+        } catch (ignored) {}
+        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(USER_KEY);
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(USER_KEY);
-        localStorage.removeItem(DEV_STUDENT_KEY);
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
     }
 
     async function request(endpoint, options = {}) {
@@ -61,10 +64,6 @@ const ApiClient = (function () {
         const token = getToken();
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
-        } else {
-            // Development fallback token scoped to active test student ID (1 or 2)
-            const devId = getDevStudentId();
-            headers['Authorization'] = `Bearer dev-student-${devId}`;
         }
 
         try {
@@ -79,11 +78,16 @@ const ApiClient = (function () {
             clearTimeout(timeoutId);
 
             if (response.status === 401) {
-                // If token invalid, remove it
+                // If token invalid or unauthenticated, clear session
                 setToken(null);
                 setUser(null);
-                showToast('Authentication required or session expired.', 'warning');
-                throw new Error('Unauthorized');
+                const path = window.location.pathname;
+                if (!path.endsWith('login.html') && !path.endsWith('register.html') && !path.endsWith('index.html')) {
+                    window.location.href = 'login.html';
+                }
+                const err = new Error('Authentication required. Please sign in.');
+                err.status = 401;
+                throw err;
             }
 
             let data;
@@ -162,8 +166,6 @@ const ApiClient = (function () {
         setToken,
         getUser,
         setUser,
-        getDevStudentId,
-        setDevStudentId,
         logout,
         get: (endpoint) => request(endpoint, { method: 'GET' }),
         post: (endpoint, body) => request(endpoint, { method: 'POST', body: JSON.stringify(body) }),

@@ -1,6 +1,9 @@
 -- ============================================================================
--- CampusTrack — Personal College Life Tracker
--- Database Schema (MySQL 8.0+ compatible)
+-- CampusTrack — Scope Restricted Schema (Phase 1 & Phase 2 Only)
+-- Retained Modules:
+--   1. Phase 1: Semester Management
+--   2. Phase 2: Subject Management, Marks & Semester Results
+-- MySQL 8.0+ Compatible
 -- ============================================================================
 
 CREATE DATABASE IF NOT EXISTS `campustrack` 
@@ -11,10 +14,7 @@ USE `campustrack`;
 
 -- Disable foreign key checks for clean recreation
 SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE IF EXISTS `activities`;
-DROP TABLE IF EXISTS `records`;
-DROP TABLE IF EXISTS `semester_results`;
-DROP TABLE IF EXISTS `assignments`;
+DROP TABLE IF EXISTS `subject_results`;
 DROP TABLE IF EXISTS `assessments`;
 DROP TABLE IF EXISTS `subjects`;
 DROP TABLE IF EXISTS `semesters`;
@@ -27,23 +27,26 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ----------------------------------------------------------------------------
 CREATE TABLE `students` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `registration_number` VARCHAR(50) NOT NULL UNIQUE,
   `name` VARCHAR(100) NOT NULL,
   `email` VARCHAR(150) NOT NULL UNIQUE,
   `password_hash` VARCHAR(255) NOT NULL,
   `department` VARCHAR(100) NOT NULL,
   `college` VARCHAR(150) NOT NULL,
   `admission_year` INT NOT NULL,
+  `current_academic_year` VARCHAR(30) NOT NULL DEFAULT '2024-2025',
   `grading_scale` VARCHAR(20) NOT NULL DEFAULT '10-POINT',
   `avatar_url` VARCHAR(500) DEFAULT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  INDEX `idx_students_email` (`email`)
+  INDEX `idx_students_email` (`email`),
+  INDEX `idx_students_reg_no` (`registration_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
 -- Table: semesters
 -- Semester progress records from 1 through graduation
--- Primary key: id (semester_id auto-increment)
+-- Primary key: id (semester_id)
 -- Unique constraint on (student_id, semester_number)
 -- ----------------------------------------------------------------------------
 CREATE TABLE `semesters` (
@@ -60,8 +63,6 @@ CREATE TABLE `semesters` (
   INDEX `idx_semesters_student` (`student_id`, `status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ----------------------------------------------------------------------------
--- Table: subjects
 -- ----------------------------------------------------------------------------
 -- Table: subjects
 -- Subjects enrolled per semester with credits, types, and faculty
@@ -92,7 +93,7 @@ CREATE TABLE `subjects` (
 
 -- ----------------------------------------------------------------------------
 -- Table: assessments
--- Granular assessment marks (Internals, Lab marks, Quizzes, Examinations)
+-- Continuous assessment marks (Internals, Lab marks, Quizzes, Examinations)
 -- Primary key: id (assessment_id)
 -- ----------------------------------------------------------------------------
 CREATE TABLE `assessments` (
@@ -101,7 +102,7 @@ CREATE TABLE `assessments` (
   `student_id` INT NOT NULL,
   `assessment_name` VARCHAR(150) DEFAULT NULL,
   `assessment_category` VARCHAR(100) NOT NULL DEFAULT 'Assignment',
-  `assessment_type` VARCHAR(50) DEFAULT NULL,
+  `assessment_type` VARCHAR(100) DEFAULT NULL,
   `title` VARCHAR(120) DEFAULT NULL,
   `max_marks` DECIMAL(5,2) NOT NULL DEFAULT 100.00,
   `obtained_marks` DECIMAL(5,2) NOT NULL,
@@ -136,99 +137,4 @@ CREATE TABLE `subject_results` (
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`subject_id`) REFERENCES `subjects`(`id`) ON DELETE CASCADE,
   INDEX `idx_subject_results_subject` (`subject_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ----------------------------------------------------------------------------
--- Table: assignments
--- Assignments with priorities, due dates, statuses, and attachments
--- ----------------------------------------------------------------------------
-CREATE TABLE `assignments` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `student_id` INT NOT NULL,
-  `semester_id` INT NOT NULL,
-  `subject_id` INT DEFAULT NULL,
-  `title` VARCHAR(200) NOT NULL,
-  `description` TEXT DEFAULT NULL,
-  `due_date` DATETIME NOT NULL,
-  `priority` ENUM('LOW', 'MEDIUM', 'HIGH', 'URGENT') NOT NULL DEFAULT 'MEDIUM',
-  `status` ENUM('Pending', 'In Progress', 'Submitted', 'Completed') NOT NULL DEFAULT 'Pending',
-  `attachment_url` VARCHAR(500) DEFAULT NULL,
-  `submitted_at` DATETIME DEFAULT NULL,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (`student_id`) REFERENCES `students`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`semester_id`) REFERENCES `semesters`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`subject_id`) REFERENCES `subjects`(`id`) ON DELETE SET NULL,
-  INDEX `idx_assignments_student_status` (`student_id`, `status`),
-  INDEX `idx_assignments_due` (`due_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ----------------------------------------------------------------------------
--- Table: semester_results
--- Official cumulative evaluation per semester (SGPA, CGPA, Credits)
--- ----------------------------------------------------------------------------
-CREATE TABLE `semester_results` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `student_id` INT NOT NULL,
-  `semester_id` INT NOT NULL UNIQUE,
-  `total_credits` INT NOT NULL DEFAULT 0,
-  `earned_credits` INT NOT NULL DEFAULT 0,
-  `sgpa` DECIMAL(4,2) NOT NULL DEFAULT 0.00,
-  `cgpa` DECIMAL(4,2) NOT NULL DEFAULT 0.00,
-  `result_status` VARCHAR(30) NOT NULL DEFAULT 'PASS',
-  `remarks` VARCHAR(255) DEFAULT NULL,
-  `published_date` DATE DEFAULT NULL,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (`student_id`) REFERENCES `students`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`semester_id`) REFERENCES `semesters`(`id`) ON DELETE CASCADE,
-  INDEX `idx_results_student` (`student_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ----------------------------------------------------------------------------
--- Table: records
--- Certificates, result sheets, lab records, course credentials
--- ----------------------------------------------------------------------------
-CREATE TABLE `records` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `student_id` INT NOT NULL,
-  `semester_id` INT DEFAULT NULL,
-  `category` ENUM('certificate', 'result_sheet', 'lab_record', 'course_completion', 'id_card', 'other') NOT NULL,
-  `title` VARCHAR(200) NOT NULL,
-  `issuer` VARCHAR(150) DEFAULT NULL,
-  `issue_date` DATE DEFAULT NULL,
-  `credential_id` VARCHAR(100) DEFAULT NULL,
-  `file_url` VARCHAR(500) NOT NULL,
-  `file_name` VARCHAR(255) DEFAULT NULL,
-  `file_size_kb` INT DEFAULT 0,
-  `file_type` VARCHAR(60) DEFAULT NULL,
-  `description` TEXT DEFAULT NULL,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (`student_id`) REFERENCES `students`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`semester_id`) REFERENCES `semesters`(`id`) ON DELETE SET NULL,
-  INDEX `idx_records_student_cat` (`student_id`, `category`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ----------------------------------------------------------------------------
--- Table: activities
--- Projects, internships, hackathons, seminars, extracurriculars
--- ----------------------------------------------------------------------------
-CREATE TABLE `activities` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `student_id` INT NOT NULL,
-  `semester_id` INT DEFAULT NULL,
-  `category` ENUM('project', 'internship', 'hackathon', 'workshop', 'seminar', 'competition', 'sports', 'extracurricular') NOT NULL,
-  `title` VARCHAR(200) NOT NULL,
-  `role_or_position` VARCHAR(120) DEFAULT NULL,
-  `organization` VARCHAR(150) DEFAULT NULL,
-  `start_date` DATE DEFAULT NULL,
-  `end_date` DATE DEFAULT NULL,
-  `github_url` VARCHAR(500) DEFAULT NULL,
-  `demo_url` VARCHAR(500) DEFAULT NULL,
-  `certificate_url` VARCHAR(500) DEFAULT NULL,
-  `description` TEXT DEFAULT NULL,
-  `skills` VARCHAR(255) DEFAULT NULL,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (`student_id`) REFERENCES `students`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`semester_id`) REFERENCES `semesters`(`id`) ON DELETE SET NULL,
-  INDEX `idx_activities_student_cat` (`student_id`, `category`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

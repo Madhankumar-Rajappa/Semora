@@ -8,7 +8,6 @@ import com.campustrack.model.AcademicSummary;
 import com.campustrack.model.Subject;
 import com.campustrack.model.SubjectResult;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
